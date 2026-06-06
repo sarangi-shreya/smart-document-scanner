@@ -1,0 +1,6 @@
+node_modules/
+build/
+.env
+backend/__pycache__/
+backend/uploads/
+backend/metadata.json

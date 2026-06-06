@@ -1,0 +1,42 @@
+.drop-zone {
+  border: 2px dashed #aaaaaa;
+  border-radius: 10px;
+  width: 400px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 40px auto;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.drop-zone:hover {
+  border-color: #4a90e2;
+  background-color: #f0f6ff;
+}
+
+.drop-zone p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.drop-zone input[type="file"] {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.selected-file {
+  text-align: center;
+  color: #4a90e2;
+  font-size: 14px;
+  margin-top: 8px;
+}
