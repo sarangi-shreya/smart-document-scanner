@@ -61,31 +61,64 @@ def deskew(image):
         if len(approx) == 4:
             doc_contour = approx
             break
-    if doc_contour is None:
-        return image  # return original if no document detected
-    
-    rect = order_points(doc_contour.reshape(4,2))
-    (tl, tr, br, bl) = rect
-    
-    widthA = np.sqrt((br[0]-bl[0])**2 + (br[1]-bl[1])**2)
-    widthB = np.sqrt((tr[0]-tl[0])**2 + (tr[1]-tl[1])**2) 
-    maxWidth = max(int(widthA),int(widthB))
+    if doc_contour is not None:
 
-    heightA = np.sqrt((tr[0]-br[0])**2 + (tr[1]-br[1])**2)
-    heightB = np.sqrt((tl[0]-bl[0])**2 + (tl[1]-bl[1])**2)
-    maxHeight = max(int(heightA), int(heightB))
+        rect = order_points(doc_contour.reshape(4,2))
+        (tl, tr, br, bl) = rect    
+        widthA = np.sqrt((br[0]-bl[0])**2 + (br[1]-bl[1])**2)
+        widthB = np.sqrt((tr[0]-tl[0])**2 + (tr[1]-tl[1])**2) 
+        maxWidth = max(int(widthA),int(widthB))
 
-    dst = np.array([
-        [0,0],
-        [maxWidth-1,0],
-        [maxWidth-1, maxHeight-1],
-        [0, maxHeight-1]],
-        dtype = "float32"
+        heightA = np.sqrt((tr[0]-br[0])**2 + (tr[1]-br[1])**2)
+        heightB = np.sqrt((tl[0]-bl[0])**2 + (tl[1]-bl[1])**2)
+        maxHeight = max(int(heightA), int(heightB))
+
+        dst = np.array([
+            [0,0],
+            [maxWidth-1,0],
+            [maxWidth-1, maxHeight-1],
+            [0, maxHeight-1]],
+            dtype = "float32"
+            )
+        matrix = cv2.getPerspectiveTransform(rect, dst)
+        warped = cv2.warpPerspective(image, matrix, (maxWidth,maxHeight))
+        return warped
+    else:
+        coords = np.column_stack(np.where(edges>0))
+        if len(coords) == 0:
+            return image
+        angle = cv2.minAreaRect(coords)[-1]
+        if angle < -45:
+            angle = -(90 + angle)
+        else:
+            angle =  -angle
+        if abs(angle) < 0.5:
+            return image
+        (h, w) = image.shape[:2]
+        center = (w // 2, h // 2)
+        rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+        rotated = cv2.warpAffine(
+            image,
+            rotation_matrix,
+            (w, h),
+            flags=cv2.INTER_CUBIC,
+            borderMode=cv2.BORDER_REPLICATE
         )
-    matrix = cv2.getPerspectiveTransform(rect, dst)
-    warped = cv2.warpPerspective(image, matrix, (maxWidth,maxHeight))
-    return warped
-
+        return rotated
+    
+def binarize(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray,(5,5),0)
+    thresh = cv2.adaptiveThreshold(
+        blurred,
+        255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        11,
+        2
+    )
+    return thresh
+    
 @app.post("/deskew")
 async def deskew_image(file: UploadFile = File(...)):
     contents = await file.read()
@@ -98,6 +131,19 @@ async def deskew_image(file: UploadFile = File(...)):
         io.BytesIO(buffer.tobytes()),
         media_type="image/jpeg"
     )
+
+@app.post("/binarize")
+async def binarize_img(file:UploadFile = File(...)):
+    contents = await file.read()
+    nparr = np.frombuffer(contents,np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    result = binarize(image)
+    _, buffer = cv2.imencode('.jpg',result)
+    return StreamingResponse(
+        io.BytesIO(buffer.tobytes()),
+        media_type="image/jpeg" 
+    )
+
 @app.post("/process")
 async def process_img(file: UploadFile = File(...)):
     contents = await file.read()   

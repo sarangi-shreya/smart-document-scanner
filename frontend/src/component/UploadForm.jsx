@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { uploadFile } from '../services/api';
+import { uploadFile, processFile } from '../services/api';
 import toast from 'react-hot-toast';
+import ImagePreview from './ImagePreview';
 
 function Fileupload() {
   const [file, setFile] = useState(null);
+  const [originalUrl, setOriginalUrl] = useState(null);
+  const [processedUrl, setProcessedUrl] = useState(null);
 
     async function handleUpload() {
   
@@ -11,8 +14,14 @@ function Fileupload() {
         toast.error("Please select a file first!")
         return;
       }
-      const response = await uploadFile(file);
-      if (response.message) {
+      const original = URL.createObjectURL(file);
+      setOriginalUrl(original);
+
+      const uploadResponse = await uploadFile(file);
+      const processed = await processFile(file);
+      setProcessedUrl(processed);
+
+      if (uploadResponse.message) {
         toast.success("Upload Successful!");
       }
     }
@@ -49,7 +58,13 @@ function Fileupload() {
       <input type="file" onChange={handleFileInput} />
       <button onClick={handleUpload}>Upload</button>
     </div>
-       {file && <p className="selected-file">Selected: {file.name}</p>} 
+       {file && <p className="selected-file">Selected: {file.name}</p>}
+       {originalUrl && processedUrl &&
+      <ImagePreview
+        originalUrl={originalUrl}
+        processedUrl={processedUrl}
+      />
+    } 
   </>
   );
 }

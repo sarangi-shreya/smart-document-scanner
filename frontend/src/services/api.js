@@ -12,3 +12,14 @@ export async function uploadFile(file){
     const data = await response.json();     //response.json() specifically parses the raw HTTP response into a JavaScript object
     return data;            
 }
+
+export async function processFile(file) {
+    const formData = new FormData();
+    formData.append("file",file);
+    const response = await fetch("http://127.0.0.1:8000/binarize", {   // fetch sends a POST request to the URL (FastAPI). The file travels from React → FastAPI
+        method: "POST",
+        body: formData
+    });
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+}

@@ -1,4 +1,4 @@
-import UploadForm from './component/UploadForm.jsx';
+import Fileupload from './component/UploadForm.jsx';  
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 
@@ -6,7 +6,7 @@ function App() {
   return (
     <div>
       <Toaster />
-      <UploadForm />
+      <Fileupload />
     </div>
   );
 }
