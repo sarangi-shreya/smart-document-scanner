@@ -1,7 +1,7 @@
-import json
-import os
-import cv2
-import io
+import json        
+import os        # Built-in Python module for interacting with the operating system
+import cv2       # OpenCV library for image processing. Used to read, convert, and transform images.
+import io        # Built-in Python module for handling data streams in memory. Used to wrap image bytes into a stream for HTTP response.
 import numpy as np
 from fastapi.responses import StreamingResponse
 from fastapi import FastAPI
