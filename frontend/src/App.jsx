@@ -1,12 +1,12 @@
-import Fileupload from './component/UploadForm.jsx';  
 import { Toaster } from 'react-hot-toast';
+import UploadForm from './component/UploadForm';
 import './App.css';
 
 function App() {
   return (
     <div>
       <Toaster />
-      <Fileupload />
+      <UploadForm />
     </div>
   );
 }
