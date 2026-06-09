@@ -20,6 +20,6 @@ export async function processFile(file) {
         method: "POST",
         body: formData
     });
-    const blob = await response.blob();
-    return URL.createObjectURL(blob);
+    const blob = await response.blob();           //Parses response as a blob(raw binary data (image bytes)). Used instead of response.json() because the response is an image not text.
+    return URL.createObjectURL(blob);            // Converts the blob into a browser URL like blob:http://localhost:3000/abc-123.
 }

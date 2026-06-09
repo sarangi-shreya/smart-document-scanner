@@ -3,7 +3,7 @@ import { uploadFile, processFile } from '../services/api';
 import toast from 'react-hot-toast';
 import ImagePreview from './ImagePreview';
 
-function Fileupload() {
+function UploadForm() {
   const [file, setFile] = useState(null);
   const [originalUrl, setOriginalUrl] = useState(null);
   const [processedUrl, setProcessedUrl] = useState(null);
@@ -14,7 +14,7 @@ function Fileupload() {
         toast.error("Please select a file first!")
         return;
       }
-      const original = URL.createObjectURL(file);
+      const original = URL.createObjectURL(file); 
       setOriginalUrl(original);
 
       const uploadResponse = await uploadFile(file);
@@ -69,4 +69,4 @@ function Fileupload() {
   );
 }
 
-export default Fileupload;
+export default UploadForm;
