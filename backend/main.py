@@ -1,14 +1,21 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import json        
 import os        # Built-in Python module for interacting with the operating system
 import cv2       # OpenCV library for image processing. Used to read, convert, and transform images.
 import io        # Built-in Python module for handling data streams in memory. Used to wrap image bytes into a stream for HTTP response.
 import numpy as np
+import easyocr
+import re
+import google.generativeai as genai
 from fastapi.responses import StreamingResponse
 from fastapi import FastAPI
 from fastapi import UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from image_processor import ImageProcessor
+
 app = FastAPI()     # creates the application instance. Every route is registered on this object.
 
 app.add_middleware(
@@ -19,6 +26,54 @@ app.add_middleware(
 )
 os.makedirs("uploads", exist_ok=True) 
 processor = ImageProcessor() 
+reader = easyocr.Reader(['en'])
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-3.1-flash-lite")
+
+
+def refine_with_llm(ocr_text):
+    try:
+        prompt = f"""
+        You are a document data extraction assistant.
+        Below is raw OCR text extracted from a scanned document.
+        The text may contain errors due to OCR misreading.
+
+        OCR Text:
+        {ocr_text}
+
+        Extract and correct these fields and return ONLY a valid JSON object with no extra text:
+        {{
+            "name": "extracted name or null",
+            "date": "extracted date or null",
+            "id": "extracted id number or null",
+            "address": "extracted address or null"
+        }}
+        """
+        response = model.generate_content(prompt)
+        raw = response.text
+        raw = raw.replace("```json", "").replace("```", "").strip()
+        return json.loads(raw)
+    except Exception as e:
+        return {"error": str(e)}
+
+def extract_fields(text):
+    fields = {}
+
+    name_match = re.search(r"(?:name|wane|nane)[:\s#@]+([A-Za-z\s]+)", text, re.IGNORECASE)
+    date_match = re.search(r"(?:date|dated|@ated)[:\s#@]+(\d{1,2}[\/:]\d{1,2}[\/:]\d{4})", text, re.IGNORECASE)
+    id_match = re.search(r"(?:id|703|1d)[:\s#@]+(\d+)", text, re.IGNORECASE)
+    address_match = re.search(r"(?:address|addressd)[:\s#@]+(.+)", text, re.IGNORECASE)
+
+    if name_match:
+        fields["name"] = name_match.group(1).strip()
+    if date_match:
+        fields["date"] = date_match.group(1).strip()
+    if id_match:
+        fields["ID"] = id_match.group(1).strip()
+    if address_match:
+        fields["address"] = address_match.group(1).strip()
+
+    return fields
 
 def load_metadata():
     if os.path.exists("metadata.json"):
@@ -40,6 +95,21 @@ def save_metadata(filename, size, upload_time):
     with open("metadata.json", "w") as f:
         json.dump(existing_data, f, indent=4)
     
+@app.post("/ocr")
+async def ocr_text(file:UploadFile = File(...)):
+
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    binarized_img = processor.binarize(image)
+    result = reader.readtext(binarized_img )
+    texts = [item[1] for item in result]
+    full_text = "\n".join(texts)
+    return {
+    "text": full_text,
+    "fields": extract_fields(full_text),
+    "refined_text":refine_with_llm(full_text)
+}
     
 @app.post("/deskew")
 async def deskew_image(file: UploadFile = File(...)):

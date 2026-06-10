@@ -4,3 +4,4 @@ build/
 backend/__pycache__/
 backend/uploads/
 backend/metadata.json
+backend/.env
