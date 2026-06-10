@@ -154,7 +154,7 @@ GEMINI_API_KEY=your-gemini-api-key-here
 
 ## Features
 
-### Week 1 — Core Upload System ✅
+### Week 1 — Core Upload System 
 - [x] Drag-and-drop file upload UI
 - [x] Click-to-select file fallback
 - [x] FastAPI backend with file saving to `uploads/` folder
@@ -163,7 +163,7 @@ GEMINI_API_KEY=your-gemini-api-key-here
 - [x] JSON-based metadata tracking (filename, size, upload time)
 - [x] GitHub repository setup with `.gitignore`
 
-### Week 2 — Image Processing ✅
+### Week 2 — Image Processing
 - [x] Grayscale conversion using OpenCV
 - [x] Perspective correction (deskewing) using contour detection
 - [x] Angle-based rotation fallback for skewed documents
@@ -171,7 +171,7 @@ GEMINI_API_KEY=your-gemini-api-key-here
 - [x] Side-by-side Original vs Processed image display in React UI
 - [x] Refactored image processing into reusable `ImageProcessor` class
 
-### Week 3 — AI/OCR Pipeline ✅
+### Week 3 — AI/OCR Pipeline
 - [x] EasyOCR integration for text extraction from document images
 - [x] Regex-based structured field extraction (Name, Date, ID, Address)
 - [x] Google Gemini LLM integration for intelligent OCR error correction
