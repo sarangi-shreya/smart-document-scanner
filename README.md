@@ -176,7 +176,7 @@ GEMINI_API_KEY=your-gemini-api-key-here
 - [x] Regex-based structured field extraction (Name, Date, ID, Address)
 - [x] Google Gemini LLM integration for intelligent OCR error correction
 - [x] Returns raw text, regex fields, and LLM-refined fields in one response
-- [ ] Dynamic React form auto-populated with extracted data (Day 4)
+- [x] Dynamic React form auto-populated with extracted data
 - [ ] End-to-end demo: Upload → Process → Extract → Fill Form (Day 5)
 
 ---
