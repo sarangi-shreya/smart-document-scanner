@@ -1,6 +1,6 @@
 # Smart Document Scanner
 
-A fullstack AI-powered document scanner built with React and FastAPI. Users can drag-and-drop or select document images for upload. The backend processes images using OpenCV, extracts text using EasyOCR, and refines extracted fields using Google Gemini LLM.
+A fullstack AI-powered document scanner built with React and FastAPI. Users can drag-and-drop or select document images for upload. The backend processes images using OpenCV, extracts text using EasyOCR, and refines extracted fields using Groq API.
 
 ---
 
@@ -52,7 +52,7 @@ smart-document-scanner/
 | OpenCV | Image processing |
 | NumPy | Array operations for image data |
 | EasyOCR | AI-based text extraction from images |
-| Google Gemini API | LLM for cleaning and structuring OCR output |
+| Groq API (LLaMA 3.3) | LLM for cleaning and structuring OCR output |
 | python-dotenv | Secure API key management |
 
 ---
@@ -91,7 +91,7 @@ API docs: `http://127.0.0.1:8000/docs`
 
 Create a `.env` file inside the `backend/` folder:
 ```
-GEMINI_API_KEY=your-gemini-api-key-here
+GROQ_API_KEY=your-groq-api-key-here
 ```
 
 ---
@@ -235,7 +235,8 @@ Clean black/white document ready for OCR
 - `frontend/node_modules/` is gitignored — run `npm install` to recreate
 - CORS configured for `http://localhost:3000`
 - EasyOCR downloads language models on first run — takes a few minutes
-- Gemini API free tier has rate limits — paid key needed for production
+- Groq API free tier has rate limits — paid key needed for production
+- Groq LLM used for OCR text refinement — model: llama-3.3-70b-versatile
 
 ---
 
