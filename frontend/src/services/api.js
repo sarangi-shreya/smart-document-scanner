@@ -23,3 +23,14 @@ export async function processFile(file) {
     const blob = await response.blob();           //Parses response as a blob(raw binary data (image bytes)). Used instead of response.json() because the response is an image not text.
     return URL.createObjectURL(blob);            // Converts the blob into a browser URL like blob:http://localhost:3000/abc-123.
 }
+
+export async function ocrFile(file) {
+    const formData = new FormData();
+    formData.append("file",file);
+    const response = await fetch("http://127.0.0.1:8000/ocr", {
+        method: "POST",
+        body: formData
+    });
+    const data = await response.json();
+    return data;
+}

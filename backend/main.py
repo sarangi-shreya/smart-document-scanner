@@ -8,13 +8,13 @@ import io        # Built-in Python module for handling data streams in memory. U
 import numpy as np
 import easyocr
 import re
-import google.generativeai as genai
 from fastapi.responses import StreamingResponse
 from fastapi import FastAPI
 from fastapi import UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from image_processor import ImageProcessor
+from groq import Groq
 
 app = FastAPI()     # creates the application instance. Every route is registered on this object.
 
@@ -27,9 +27,7 @@ app.add_middleware(
 os.makedirs("uploads", exist_ok=True) 
 processor = ImageProcessor() 
 reader = easyocr.Reader(['en'])
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-3.1-flash-lite")
-
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def refine_with_llm(ocr_text):
     try:
@@ -49,8 +47,11 @@ def refine_with_llm(ocr_text):
             "address": "extracted address or null"
         }}
         """
-        response = model.generate_content(prompt)
-        raw = response.text
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        raw = response.choices[0].message.content
         raw = raw.replace("```json", "").replace("```", "").strip()
         return json.loads(raw)
     except Exception as e:

@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { uploadFile, processFile } from '../services/api';
+import { uploadFile, processFile, ocrFile } from '../services/api';
 import toast from 'react-hot-toast';
 import ImagePreview from './ImagePreview';
+import DataFrame from './DataFrame';
 
 function UploadForm() {
   const [file, setFile] = useState(null);
   const [originalUrl, setOriginalUrl] = useState(null);
   const [processedUrl, setProcessedUrl] = useState(null);
-
+  const [ocrData, setOcrData] = useState(null);
+  
     async function handleUpload() {
   
       if (!file) {
@@ -20,6 +22,11 @@ function UploadForm() {
       const uploadResponse = await uploadFile(file);
       const processed = await processFile(file);
       setProcessedUrl(processed);
+
+      const ocrResult = await ocrFile(file);
+      console.log("OCR Result:", ocrResult);
+      console.log("Refined text:", ocrResult.refined_text);
+      setOcrData(ocrResult.refined_text);
 
       if (uploadResponse.message) {
         toast.success("Upload Successful!");
@@ -63,10 +70,10 @@ function UploadForm() {
       <ImagePreview
         originalUrl={originalUrl}
         processedUrl={processedUrl}
-      />
+      /> 
     } 
+     {ocrData && <DataFrame ocrData={ocrData} />}
   </>
   );
 }
-
 export default UploadForm;
