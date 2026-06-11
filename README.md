@@ -174,7 +174,7 @@ GROQ_API_KEY=your-groq-api-key-here
 ### Week 3 — AI/OCR Pipeline
 - [x] EasyOCR integration for text extraction from document images
 - [x] Regex-based structured field extraction (Name, Date, ID, Address)
-- [x] Google Gemini LLM integration for intelligent OCR error correction
+- [x] Groq LLM integration (LLaMA 3.3) for intelligent OCR error correction
 - [x] Returns raw text, regex fields, and LLM-refined fields in one response
 - [x] Dynamic React form auto-populated with extracted data
 - [ ] End-to-end demo: Upload → Process → Extract → Fill Form (Day 5)
@@ -204,7 +204,7 @@ EasyOCR extracts raw text from binarized image
         ↓
 Regex finds structured fields (Name, Date, ID, Address)
         ↓
-Gemini LLM corrects OCR errors and returns clean JSON
+Groq LLM (LLaMA 3.3) corrects OCR errors and returns clean JSON
         ↓
 Structured data returned to frontend
 ```
