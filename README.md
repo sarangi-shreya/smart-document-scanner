@@ -63,7 +63,7 @@ smart-document-scanner/
 - Node.js (v16+)
 - Python 3.8+
 - Git
-- Google Gemini API key from https://aistudio.google.com
+- Groq API key from (https://console.groq.com/keys)
 
 ### Frontend Setup
 
