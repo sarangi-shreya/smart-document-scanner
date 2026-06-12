@@ -29,6 +29,10 @@ processor = ImageProcessor()
 reader = easyocr.Reader(['en'])
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+# models = client.models.list()
+# for model in models.data:
+#     print(model.id)
+
 def refine_with_llm(ocr_text):
     try:
         prompt = f"""
@@ -49,7 +53,7 @@ def refine_with_llm(ocr_text):
         """
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}]  
         )
         raw = response.choices[0].message.content
         raw = raw.replace("```json", "").replace("```", "").strip()
