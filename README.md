@@ -177,7 +177,7 @@ GROQ_API_KEY=your-groq-api-key-here
 - [x] Groq LLM integration (LLaMA 3.3) for intelligent OCR error correction
 - [x] Returns raw text, regex fields, and LLM-refined fields in one response
 - [x] Dynamic React form auto-populated with extracted data
-- [ ] End-to-end demo: Upload → Process → Extract → Fill Form (Day 5)
+- [x] End-to-end demo: Upload → Process → Extract → Fill Form 
 
 ---
 
